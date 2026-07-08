@@ -126,14 +126,16 @@ def generate(embedding, model, encoder, decoder):
 		# print(f"sample {sample}")
 
 		# decode the next character
-		x = decoder[sample]
+		y = decoder[sample]
 
 		# reach the end
-		if x == '$':
+		if y == '$':
 			break
 
 		# append x
-		res += x
+		res += y
+		x = x[1:] + y
+		# Error-1: make sure that x's length is always TIME_SIZE
 	return res
 
 def main():
