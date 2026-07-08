@@ -172,7 +172,8 @@ def main():
 			embedding.parameters(),
 			model.parameters()
 		),
-		lr = 0.1
+		lr = 0.01
+		# Error-7: learning rate 0.1 is too large for Adam
 	)
 	# Error-2: Do not forget to initialize the optimizer as well!!
 	# Error-4!!!!The embedding's parameter is forgot???
