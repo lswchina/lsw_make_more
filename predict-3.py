@@ -158,7 +158,7 @@ def main():
 
 
 	# train
-	for i in range(1):
+	for i in range(10000):
 		# sample
 		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
 		# Error-4: the size (position 2) must be a tuple!
