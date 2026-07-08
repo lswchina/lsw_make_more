@@ -5,6 +5,11 @@
 第二层是输出层，包含一个线性变换。
 token编码映射到一个二维空间。
 
+
+总结：
+1. 别忘了把embedding的参数加入optimizer。否则它永远不会被更新。
+2. hidden layer的值可以内定，27太小。
+3. 用2个维度模拟27个字符有点不够用。
 '''
 
 
@@ -17,7 +22,8 @@ from itertools import chain
 
 BATCH_SIZE = 20
 TIME_SIZE = 3
-EMBED_SIZE = 2
+HIDDEN_FEATURES = 50
+EMBED_SIZE = 5
 
 
 class myLinear(nn.Module):
@@ -58,11 +64,10 @@ class myLayer(nn.Module):
 class myNetwork(nn.Module):
 	def __init__(self, in_features, out_features):
 		super().__init__()
-		hidden_features = out_features
 		self.network = nn.Sequential(
-			myLayer(in_features, hidden_features),
-			myLayer(hidden_features, hidden_features),
-			myLinear(hidden_features, out_features)
+			myLayer(in_features, HIDDEN_FEATURES),
+			myLayer(HIDDEN_FEATURES, HIDDEN_FEATURES),
+			myLinear(HIDDEN_FEATURES, out_features)
 		)
 	
 	def forward(self, x):
@@ -173,7 +178,7 @@ def main():
 
 
 	# train
-	for i in range(5000):
+	for i in range(10000):
 		# sample
 		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
 		# Error-3: the size (position 2) must be a tuple!
