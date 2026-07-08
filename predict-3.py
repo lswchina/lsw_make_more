@@ -33,8 +33,9 @@ class myLinear(nn.Module):
 			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
 		)
 		self.b = nn.Parameter(
-			torch.randn(hidden_features)
+			torch.zeros(hidden_features)
 		)
+		# Error-5: self.b is better initialized as zero
 
 	
 	def forward(self, x):
