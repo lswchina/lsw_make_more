@@ -29,19 +29,19 @@ class myLinear(nn.Module):
 			torch.randn(in_features, hidden_features)
 		)
 		if not bias:
+			self.b = None
+		else:
 			self.b = nn.Parameter(
 				torch.zeros(hidden_features)
 			)
-		else:
-			self.b = nn.Parameter(
-				torch.randn(hidden_features)
-			)
-		# Error-5: self.b is better initialized as zero in the hidden layer
 
 	
 	def forward(self, x):
 		# print("linear:", x.shape)
-		return x @ self.W + self.b
+		out = x @ self.W
+		if self.b is not None:
+			out = out + self.b
+		return out
 	
 class myTanh(nn.Module):
 	def __init__(self):
@@ -220,7 +220,7 @@ def main():
 
 	# train
 	model.train()
-	for i in range(1):
+	for i in range(10000):
 		# sample
 		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
 		X_sample = X_label[idx] # B, T
