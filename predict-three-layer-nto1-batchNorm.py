@@ -11,7 +11,6 @@ token编码映射到一个二维空间。
 
 
 import os
-import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -27,7 +26,7 @@ class myLinear(nn.Module):
 	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		self.W = nn.Parameter(
-			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
+			torch.randn(in_features, hidden_features)
 		)
 		if not bias:
 			self.b = nn.Parameter(
@@ -54,14 +53,53 @@ class myTanh(nn.Module):
 		exp_minus_2x = torch.exp(-2 * x)
 		positive = (1 - exp_minus_2x) / (1 + exp_minus_2x)
 		return torch.where(x >= 0, positive, negative)
-		# Error-7: Exp(x) is inf if x is too large
+
+class myBatchNorm(nn.Module):
+	def __init__(self, hidden_features, momentum=0.1):
+		super().__init__()
+		self.lamda = nn.Parameter(
+			torch.ones(hidden_features)
+		)
+		self.beta = nn.Parameter(
+			torch.zeros(hidden_features)
+		)
+		self.register_buffer(
+			"running_mean",
+			torch.zeros(hidden_features)
+		)
+		self.register_buffer(
+			"running_var",
+			torch.ones(hidden_features)
+		)
+		self.momentum = momentum
+	# Error-1: register these parameters so that they will be remembered in the model
+	# Error-2: memontum is a hyper-paremater, not a tensor, not required to move to GPU, intialize it normally
+	# Error-3: lamda is initialized as ones, beta is initialized as zeros, running_var is initialized as zeros
+
+
+	def forward(self, x): # x: B, H
+		if self.training:
+			mean = torch.mean(x, dim=0) # H
+			var = torch.var(x, dim=0) # H
+			# Error-4: no keepdim! otherwise the adding of mean/var to running_mean/running_var will destroy the shape
+
+			with torch.no_grad():
+				self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * mean
+				self.running_var = (1 - self.momentum) * self.running_var + self.momentum * var
+
+		else:
+			mean = self.running_mean
+			var = self.running_var
+
+		return self.lamda * (x - mean) / torch.sqrt(var + 1e-5) + self.beta
 
 class myLayer(nn.Module):
 	def __init__(self, in_features, hidden_features):
 		super().__init__()
 		self.layer = nn.Sequential(
 			myLinear(in_features, hidden_features, bias=False),
-			myTanh()
+			myTanh(),
+			myBatchNorm(hidden_features)
 		)
 
 	def forward(self, x):
@@ -157,7 +195,6 @@ def generate(embedding, model, encoder, decoder):
 		# append x
 		res += y
 		x = x[1:] + y
-		# Error-1: make sure that x's length is always TIME_SIZE
 	return res
 
 def main():
@@ -178,17 +215,14 @@ def main():
 			model.parameters()
 		),
 		lr = 0.01
-		# Error-7: learning rate 0.1 is too large for Adam
 	)
-	# Error-2: Do not forget to initialize the optimizer as well!!
-	# Error-4!!!!The embedding's parameter is forgot???
 
 
 	# train
-	for i in range(10000):
+	model.train()
+	for i in range(1):
 		# sample
 		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
-		# Error-3: the size (position 2) must be a tuple!
 		X_sample = X_label[idx] # B, T
 		Y_sample = Y_label[idx] # B
 
@@ -208,6 +242,7 @@ def main():
 		optimizer.zero_grad()
 
 	# generate
+	model.eval()
 	for _ in range(10):
 		res = generate(embedding, model, encoder, decoder)
 		print(res)
