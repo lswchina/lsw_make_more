@@ -132,10 +132,10 @@ def generate(W, encoder, decoder):
 		# print(probs)
 
 		# sample the next token based on the probs (the max prob)
-		print(probs[0])
+		# print(probs[0])
 		m = torch.distributions.Categorical(probs[0]) # C
 		sample = m.sample().item() # 1
-		print(f"sample {sample}")
+		# print(f"sample {sample}")
 
 		# decode the next character
 		x = decoder[sample]
