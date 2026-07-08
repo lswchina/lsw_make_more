@@ -29,15 +29,20 @@ EMBED_SIZE = 5
 
 
 class myLinear(nn.Module):
-	def __init__(self, in_features, hidden_features):
+	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		self.W = nn.Parameter(
 			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
 		)
-		self.b = nn.Parameter(
-			torch.zeros(hidden_features)
-		)
-		# Error-5: self.b is better initialized as zero
+		if not bias:
+			self.b = nn.Parameter(
+				torch.zeros(hidden_features)
+			)
+		else:
+			self.b = nn.Parameter(
+				torch.randn(hidden_features)
+			)
+		# Error-5: self.b is better initialized as zero in the hidden layer
 
 	
 	def forward(self, x):
@@ -60,7 +65,7 @@ class myLayer(nn.Module):
 	def __init__(self, in_features, hidden_features):
 		super().__init__()
 		self.layer = nn.Sequential(
-			myLinear(in_features, hidden_features),
+			myLinear(in_features, hidden_features, bias=False),
 			myTanh()
 		)
 

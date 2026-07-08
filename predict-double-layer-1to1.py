@@ -10,6 +10,7 @@ token编码映射到一个二维空间。
 1. 上下文太短了，只能看到前一个字符。
 2. 参数标准化的时候，别忘了把self.b初始化为zero。
 3. 学习率0.1对AdamW来说太大了。默认是1e-3。
+4. 输出层的self.b不需要初始化为zero。
 '''
 
 
@@ -25,17 +26,22 @@ EMBED_SIZE = 2
 
 
 class myLinear(nn.Module):
-	def __init__(self, in_features, hidden_features):
+	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		# Error-3: remember to call super().__init__() at first, otherwise the parameters will not be correctly set
 		self.W = nn.Parameter(
 			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
 		) 
 		# Error-1: remember to set them as parameters!!
-		self.b = nn.Parameter(
-			torch.zeros(hidden_features)
-		)
-		# Error-6: self.b is better initialized as zero
+		if not bias:
+			self.b = nn.Parameter(
+				torch.zeros(hidden_features)
+			)
+		else:
+			self.b = nn.Parameter(
+				torch.randn(hidden_features)
+			)
+		# Error-6: self.b is better initialized as zero in the hidden layer
 
 	
 	def forward(self, x):
@@ -58,7 +64,7 @@ class myNetwork(nn.Module):
 		super().__init__()
 		hidden_features = 2 * out_features
 		self.network = nn.Sequential(
-			myLinear(in_features, hidden_features),
+			myLinear(in_features, hidden_features, bias=False),
 			myTanh(),
 			myLinear(hidden_features, out_features),
 		)

@@ -1,17 +1,12 @@
 '''
 实现了一个三层神经网络。基于前n个字符预测下一个字符。
 前两层都分别包含一个线性变换以及一个激活函数。
-在激活函数之前修改了线性层的权重使得分布方差依然为1。
+这两层的结尾位置，手搓了一个batch normalization。
 第三层是输出层，包含一个线性变换。
 token编码映射到一个二维空间。
 
 
 总结：
-1. 别忘了把embedding的参数加入optimizer。否则它永远不会被更新。
-2. hidden layer的值可以内定，27太小。
-3. 用2个维度模拟27个字符有点不够用。
-4. myTanh的计算容易出问题：exp(x)可能变成inf
-5. 没有做batch normalization。
 '''
 
 
@@ -29,15 +24,20 @@ EMBED_SIZE = 5
 
 
 class myLinear(nn.Module):
-	def __init__(self, in_features, hidden_features):
+	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		self.W = nn.Parameter(
 			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
 		)
-		self.b = nn.Parameter(
-			torch.zeros(hidden_features)
-		)
-		# Error-5: self.b is better initialized as zero
+		if not bias:
+			self.b = nn.Parameter(
+				torch.zeros(hidden_features)
+			)
+		else:
+			self.b = nn.Parameter(
+				torch.randn(hidden_features)
+			)
+		# Error-5: self.b is better initialized as zero in the hidden layer
 
 	
 	def forward(self, x):
@@ -60,7 +60,7 @@ class myLayer(nn.Module):
 	def __init__(self, in_features, hidden_features):
 		super().__init__()
 		self.layer = nn.Sequential(
-			myLinear(in_features, hidden_features),
+			myLinear(in_features, hidden_features, bias=False),
 			myTanh()
 		)
 
