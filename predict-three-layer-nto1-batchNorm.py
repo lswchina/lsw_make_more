@@ -215,7 +215,7 @@ def main():
 			embedding.parameters(),
 			model.parameters()
 		),
-		lr = 0.01
+		lr = 0.001
 	)
 
 
