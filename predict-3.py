@@ -31,6 +31,7 @@ class myLinear(nn.Module):
 
 	
 	def forward(self, x):
+		print("linear:", x.shape)
 		return x @ self.W + self.b
 	
 class myTanh(nn.Module):
@@ -53,6 +54,7 @@ class myNetwork(nn.Module):
 		)
 
 	def forward(self, x):
+		print("network:", x.shape)
 		return self.network(x)
 
 class myEmbedding(nn.Module):
@@ -84,7 +86,7 @@ def form_training_set(dataset):
 		for i in range(len(append_name) - TIME_SIZE):
 			X_train.append(append_name[i: i + TIME_SIZE])
 			Y_train.append(append_name[i + TIME_SIZE])
-			print(f"{append_name[i: i + TIME_SIZE]} -> {append_name[i + TIME_SIZE]}")
+			# print(f"{append_name[i: i + TIME_SIZE]} -> {append_name[i + TIME_SIZE]}")
 	return X_train, Y_train
 
 def gen_encoder_decoder(dataset):
@@ -106,13 +108,14 @@ def encode(input_, output_, stoi):
 	return x_label, y_label
 
 def generate(embedding, model, encoder, decoder):
-	x = '$'
+	x = '$' * TIME_SIZE
 	res = ""
 
 	while True:
-		x_label = torch.tensor([encoder[x]])
-		x_embedding = embedding(x_label) # 1 * C
-		logits = model(x_embedding) # 1 * V
+		x_label = torch.tensor([[encoder[ch] for ch in x]]) # 1, T
+		x_embedding = embedding(x_label) # 1, T, C
+		x_embedding = x_embedding.view(1, -1) # 1, T * C
+		logits = model(x_embedding) # 1, O
 		probs = F.softmax(logits, dim=1)
 		# print(probs)
 
@@ -144,7 +147,7 @@ def main():
 	# initialization
 	vocab_size = len(encoder)
 	embedding = myEmbedding(vocab_size, EMBED_SIZE)
-	model = myNetwork(EMBED_SIZE, vocab_size)
+	model = myNetwork(EMBED_SIZE * TIME_SIZE, vocab_size)
 	optimizer = torch.optim.AdamW(
 		model.parameters(),
 		lr = 0.1
@@ -153,16 +156,17 @@ def main():
 
 
 	# train
-	for i in range(10000):
+	for i in range(1):
 		# sample
-		idx = torch.randint(len(X_label), (BATCH_SIZE, ))
+		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
 		# Error-4: the size (position 2) must be a tuple!
-		X_sample = X_label[idx]
-		Y_sample = Y_label[idx]
+		X_sample = X_label[idx] # B, T
+		Y_sample = Y_label[idx] # B
 
 		# foward once
-		X_embedding = embedding(X_sample)
-		logits = model(X_embedding)
+		X_embedding = embedding(X_sample) # B, T, C
+		X_embedding = X_embedding.view(BATCH_SIZE, -1) # B, T * C
+		logits = model(X_embedding) # B, O
 
 		# calculate the loss and backward
 		loss = F.cross_entropy(logits, Y_sample)
