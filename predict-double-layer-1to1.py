@@ -233,25 +233,25 @@ main()
 
 # after normalization: dividing self.W by math.sqrt(fan_in)
 # loss:
-# 3.41955828666687
-# 2.3978731632232666
-# 2.347989320755005
-# 2.8034250736236572
-# 2.5115668773651123
-# 2.7252211570739746
-# 2.683234930038452
-# 3.0204710960388184
-# 2.523759365081787
-# 2.3437743186950684
+# 3.680802583694458
+# 3.093513011932373
+# 2.777766466140747
+# 3.044031858444214
+# 2.4457688331604004
+# 2.095581531524658
+# 2.7659316062927246
+# 2.38852858543396
+# 2.0113794803619385
+# 2.151726245880127
 
 # prediction
-# ponnaiosshinsftl
-# aylanolyuwa
-# sann
-# ryn
-# vurola
-# ahomalegiyslariwrirelash
-# kish
-# chinaneyvaranar
-# imeosorinidrynyeso
-# jans
+# tilaniametelylvaremrekamoo
+# ke
+# zo
+# bst
+# lulabroli
+# ee
+# lilimalm
+# ainbuke
+# ctteynamaeuiil
+# a
