@@ -31,7 +31,7 @@ class myLinear(nn.Module):
 
 	
 	def forward(self, x):
-		print("linear:", x.shape)
+		# print("linear:", x.shape)
 		return x @ self.W + self.b
 	
 class myTanh(nn.Module):
@@ -54,7 +54,7 @@ class myNetwork(nn.Module):
 		)
 
 	def forward(self, x):
-		print("network:", x.shape)
+		# print("network:", x.shape)
 		return self.network(x)
 
 class myEmbedding(nn.Module):
