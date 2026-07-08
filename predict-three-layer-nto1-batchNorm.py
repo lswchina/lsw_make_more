@@ -7,6 +7,10 @@ token编码映射到一个二维空间。
 
 
 总结：
+1. 分清楚什么类型的模型参数需要register_buffer，什么不需要。
+2. 初始化数值不是很清晰：不是所有都用randn的。比如running_mean, running_var, beta, lamda
+3. running_mean/running_var和mean/var需要保持维度一致，否则计算时会出现维度混乱。
+4. batch normalization不是每层的最后一部分，得在激活函数前才有效。
 '''
 
 
