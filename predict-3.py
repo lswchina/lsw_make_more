@@ -43,18 +43,28 @@ class myTanh(nn.Module):
 		exp_minus_x = torch.exp(-x)
 		return (exp_x - exp_minus_x) / (exp_x + exp_minus_x)
 
-class myNetwork(nn.Module):
-	def __init__(self, in_features, out_features):
+class myLayer(nn.Module):
+	def __init__(self, in_features, hidden_features):
 		super().__init__()
-		hidden_features = 2 * out_features
-		self.network = nn.Sequential(
+		self.layer = nn.Sequential(
 			myLinear(in_features, hidden_features),
-			myTanh(),
-			myLinear(hidden_features, out_features),
+			myTanh()
 		)
 
 	def forward(self, x):
-		# print("network:", x.shape)
+		return self.layer(x)
+	
+class myNetwork(nn.Module):
+	def __init__(self, in_features, out_features):
+		super().__init__()
+		hidden_features = out_features
+		self.network = nn.Sequential(
+			myLayer(in_features, hidden_features),
+			myLayer(hidden_features, hidden_features),
+			myLinear(hidden_features, out_features)
+		)
+	
+	def forward(self, x):
 		return self.network(x)
 
 class myEmbedding(nn.Module):
