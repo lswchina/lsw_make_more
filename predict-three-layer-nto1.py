@@ -11,6 +11,7 @@ token编码映射到一个二维空间。
 2. hidden layer的值可以内定，27太小。
 3. 用2个维度模拟27个字符有点不够用。
 4. myTanh的计算容易出问题：exp(x)可能变成inf
+5. 没有做batch normalization。
 '''
 
 
