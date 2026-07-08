@@ -13,6 +13,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from itertools import chain
 
 BATCH_SIZE = 20
 TIME_SIZE = 3
@@ -161,17 +162,21 @@ def main():
 	embedding = myEmbedding(vocab_size, EMBED_SIZE)
 	model = myNetwork(EMBED_SIZE * TIME_SIZE, vocab_size)
 	optimizer = torch.optim.AdamW(
-		model.parameters(),
+		chain(
+			embedding.parameters(),
+			model.parameters()
+		),
 		lr = 0.1
 	)
 	# Error-2: Do not forget to initialize the optimizer as well!!
+	# Error-4!!!!The embedding's parameter is forgot???
 
 
 	# train
-	for i in range(10000):
+	for i in range(5000):
 		# sample
 		idx = torch.randint(X_label.shape[0], (BATCH_SIZE, ))
-		# Error-4: the size (position 2) must be a tuple!
+		# Error-3: the size (position 2) must be a tuple!
 		X_sample = X_label[idx] # B, T
 		Y_sample = Y_label[idx] # B
 
@@ -198,48 +203,18 @@ def main():
 main()
 
 # loss:
-# 10.303155899047852
-# 2.9640934467315674
-# 3.1091489791870117
-# 3.1857657432556152
-# 2.9995250701904297
-# 2.7319271564483643
-# 2.773827314376831
-# 2.247504949569702
-# 2.5717110633850098
-# 2.9081358909606934
-
-# prediction:
-# a
-# aninyaeri
-# gihg
-# kiineeals
-# sonamalva
-# yoae
-# elnionii
-# iamexetaemus
-# olo
-
-# after normalization: dividing self.W by math.sqrt(fan_in)
-# loss:
-# 3.700507640838623
-# 3.1807751655578613
-# 3.142530679702759
-# 2.536449909210205
-# 3.259244203567505
-# 3.281708240509033
-# 2.686946392059326
-# 3.3252806663513184
-# 2.39096736907959
-# 2.7931809425354004
-
-# prediction:
-# menrs
-# js
-# panremale
-# aeesra
-# gahaeeeere
-# bahakah
-# bva
-# je
-# arilrereserelanea
+# 3.8555004596710205
+# 3.914299488067627
+# 3.4407386779785156
+# 3.6427276134490967
+# 3.186800479888916
+# pmi
+# mdr
+# kosa
+# qos
+# asimhi
+# rmdyocaanda
+# ycdgs
+# jamigicit
+# josn
+# sonevtamitrnrimrid

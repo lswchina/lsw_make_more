@@ -16,6 +16,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from itertools import chain
 
 BATCH_SIZE = 20
 EMBED_SIZE = 2
@@ -154,10 +155,14 @@ def main():
 	embedding = myEmbedding(vocab_size, EMBED_SIZE)
 	model = myNetwork(EMBED_SIZE, vocab_size)
 	optimizer = torch.optim.AdamW(
-		model.parameters(),
+		chain(
+			embedding.parameters(),
+			model.parameters()
+		),
 		lr = 0.1
 	)
 	# Error-2: Do not forget to initialize the optimizer as well!!
+	# Error-4!!!!The embedding's parameter is forgot???
 
 
 	# train
