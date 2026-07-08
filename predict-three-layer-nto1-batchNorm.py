@@ -98,9 +98,10 @@ class myLayer(nn.Module):
 		super().__init__()
 		self.layer = nn.Sequential(
 			myLinear(in_features, hidden_features, bias=False),
-			myTanh(),
-			myBatchNorm(hidden_features)
+			myBatchNorm(hidden_features),
+			myTanh()
 		)
+		# Error-5: batch should be before tanh
 
 	def forward(self, x):
 		return self.layer(x)
