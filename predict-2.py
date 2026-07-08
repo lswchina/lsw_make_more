@@ -46,12 +46,11 @@ class myTanh(nn.Module):
 		super().__init__()
 
 	def forward(self, x):
-		if x < 0:
-			exp_2x = torch.exp(2 * x)
-			return (exp_2x - 1) / (exp_2x + 1)
-		else:
-			exp_minus_2x = torch.exp(-2 * x)
-			return (1 - exp_minus_2x) / (1 + exp_minus_2x)
+		exp_2x = torch.exp(2 * x)
+		negative = (exp_2x - 1) / (exp_2x + 1)
+		exp_minus_2x = torch.exp(-2 * x)
+		positive = (1 - exp_minus_2x) / (1 + exp_minus_2x)
+		return torch.where(x >= 0, positive, negative)
 		# Error-7: Exp(x) is inf if x is too large
 
 class myNetwork(nn.Module):
