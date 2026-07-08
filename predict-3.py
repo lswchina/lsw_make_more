@@ -10,6 +10,7 @@ token编码映射到一个二维空间。
 1. 别忘了把embedding的参数加入optimizer。否则它永远不会被更新。
 2. hidden layer的值可以内定，27太小。
 3. 用2个维度模拟27个字符有点不够用。
+4. myTanh的计算容易出问题：exp(x)可能变成inf
 '''
 
 
@@ -47,9 +48,13 @@ class myTanh(nn.Module):
 		super().__init__()
 
 	def forward(self, x):
-		exp_x = torch.exp(x)
-		exp_minus_x = torch.exp(-x)
-		return (exp_x - exp_minus_x) / (exp_x + exp_minus_x)
+		if x < 0:
+			exp_2x = torch.exp(2 * x)
+			return (exp_2x - 1) / (exp_2x + 1)
+		else:
+			exp_minus_2x = torch.exp(-2 * x)
+			return (1 - exp_minus_2x) / (1 + exp_minus_2x)
+		# Error-7: Exp(x) is inf if x is too large
 
 class myLayer(nn.Module):
 	def __init__(self, in_features, hidden_features):

@@ -8,6 +8,8 @@ token编码映射到一个二维空间。
 
 总结：
 1. 上下文太短了，只能看到前一个字符。
+2. 参数标准化的时候，别忘了把self.b初始化为zero。
+3. 学习率0.1对AdamW来说太大了。默认是1e-3。
 '''
 
 
@@ -44,9 +46,13 @@ class myTanh(nn.Module):
 		super().__init__()
 
 	def forward(self, x):
-		exp_x = torch.exp(x)
-		exp_minus_x = torch.exp(-x)
-		return (exp_x - exp_minus_x) / (exp_x + exp_minus_x)
+		if x < 0:
+			exp_2x = torch.exp(2 * x)
+			return (exp_2x - 1) / (exp_2x + 1)
+		else:
+			exp_minus_2x = torch.exp(-2 * x)
+			return (1 - exp_minus_2x) / (1 + exp_minus_2x)
+		# Error-7: Exp(x) is inf if x is too large
 
 class myNetwork(nn.Module):
 	def __init__(self, in_features, out_features):
