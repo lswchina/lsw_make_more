@@ -1,13 +1,10 @@
 '''
-实现了一个双层神经网络。基于一个字符预测下一个字符。
+实现了一个双层神经网络。基于前n个字符预测下一个字符。
 第一层包含一个线性变换以及一个激活函数。
 在激活函数之前修改了线性层的权重使得分布方差依然为1。
 第二层是输出层，包含一个线性变换。
 token编码映射到一个二维空间。
 
-
-总结：
-1. 上下文太短了，只能看到前一个字符。
 '''
 
 
@@ -18,17 +15,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 BATCH_SIZE = 20
+TIME_SIZE = 3
 EMBED_SIZE = 2
 
 
 class myLinear(nn.Module):
 	def __init__(self, in_features, hidden_features):
 		super().__init__()
-		# Error-3: remember to call super().__init__() at first, otherwise the parameters will not be correctly set
 		self.W = nn.Parameter(
 			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
-		) 
-		# Error-1: remember to set them as parameters!!
+		)
 		self.b = nn.Parameter(
 			torch.randn(hidden_features)
 		)
@@ -77,22 +73,18 @@ def acquire_names():
 
 def form_training_set(dataset): 
 	"""
-	one input character to one output character
+	three input characters to one output character
 	"""
 
 	X_train = []
 	Y_train = []
 	for name in dataset:
-		X_train.append("$")
-		Y_train.append(name[0])
-		# print(f"$ -> {name[0]}")
-		for x, y in zip(name, name[1:]):
-			X_train.append(x)
-			Y_train.append(y)
-			# print(f"{x} -> {y}")
-		X_train.append(name[-1])
-		Y_train.append("$")
-		# print(f"{name[-1]} -> $")
+		prefix = '$' * TIME_SIZE
+		append_name = prefix + name + '$'
+		for i in range(len(append_name) - TIME_SIZE):
+			X_train.append(append_name[i: i + TIME_SIZE])
+			Y_train.append(append_name[i + TIME_SIZE])
+			print(f"{append_name[i: i + TIME_SIZE]} -> {append_name[i + TIME_SIZE]}")
 	return X_train, Y_train
 
 def gen_encoder_decoder(dataset):
@@ -109,7 +101,7 @@ def gen_encoder_decoder(dataset):
 	return stoi, itos
 
 def encode(input_, output_, stoi):
-	x_label = torch.tensor([stoi[i] for i in input_])
+	x_label = torch.tensor([[stoi[ch] for ch in str_] for str_ in input_])
 	y_label = torch.tensor([stoi[o] for o in output_])
 	return x_label, y_label
 
