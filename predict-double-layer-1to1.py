@@ -233,27 +233,27 @@ main()
 # eceilon
 # daseefii
 
-# after normalization: dividing self.W by math.sqrt(fan_in)
+# after normalization: dividing self.W by math.sqrt(fan_in) * gain
 # loss:
-# 3.680802583694458
-# 3.093513011932373
-# 2.777766466140747
-# 3.044031858444214
-# 2.4457688331604004
-# 2.095581531524658
-# 2.7659316062927246
-# 2.38852858543396
-# 2.0113794803619385
-# 2.151726245880127
+# 4.4582061767578125
+# 2.529492139816284
+# 2.55475115776062
+# 2.2487170696258545
+# 1.9661296606063843
+# 2.998621702194214
+# 2.380100727081299
+# 2.3993353843688965
+# 2.3669323921203613
+# 2.5568511486053467
 
 # prediction
-# tilaniametelylvaremrekamoo
-# ke
-# zo
-# bst
-# lulabroli
-# ee
-# lilimalm
-# ainbuke
-# ctteynamaeuiil
-# a
+# emia
+# actielladheenni
+# miaeynayugulany
+# d
+# nin
+# gh
+# jan
+# arochaydoleh
+# daiehaavaayi
+# dmrah
