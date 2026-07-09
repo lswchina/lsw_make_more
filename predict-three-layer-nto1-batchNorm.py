@@ -11,11 +11,13 @@ token编码映射到一个五维空间。
 2. 初始化数值不是很清晰：不是所有都用randn的。比如running_mean, running_var, beta, lamda
 3. running_mean/running_var和mean/var需要保持维度一致，否则计算时会出现维度混乱。
 4. batch normalization不是每层的最后一部分，得在激活函数前才有效。
+5. 线性变换中也需要kaiming normalization，因为输出层并不使用batch normalization使得分布恒定。初始的loss会很高。
 '''
 
 
 import os
 import torch
+import math
 import torch.nn as nn
 import torch.nn.functional as F
 from itertools import chain
@@ -30,8 +32,9 @@ class myLinear(nn.Module):
 	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		self.W = nn.Parameter(
-			torch.randn(in_features, hidden_features)
+			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
 		)
+		# Error-7: kaimig uniform is necessary because the last layer does not have batch normalization
 		if not bias:
 			self.b = None
 		else:
@@ -256,25 +259,25 @@ def main():
 main()
 
 # loss:
-# 9.33348274230957
-# 2.884723424911499
-# 2.751929998397827
-# 2.9838929176330566
-# 2.4973878860473633
-# 2.4243874549865723
-# 2.571622848510742
-# 2.4847114086151123
-# 1.936316728591919
-# 2.2253358364105225
+# 3.542198896408081
+# 2.355032444000244
+# 2.7171432971954346
+# 2.7449517250061035
+# 2.7616147994995117
+# 2.8759219646453857
+# 2.384162664413452
+# 2.2481658458709717
+# 2.380484104156494
+# 2.5482637882232666
 
 # prediction
-# xyavey
-# ana
-# jilce
-# lasslp
-# throlin
-# gevannah
-# cbelaala
-# mayo
-# dahi
-# anoo
+# aonphorin
+# nasmaynaniani
+# larie
+# keyte
+# breny
+# oleiz
+# hamaes
+# lmxai
+# mair
+# sannuely
