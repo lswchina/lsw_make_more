@@ -11,6 +11,7 @@ token编码映射到一个二维空间。
 2. 参数标准化的时候，别忘了把self.b初始化为zero。
 3. 学习率0.1对AdamW来说太大了。默认是1e-3。
 4. 输出层的self.b不需要初始化为zero。
+5. 线性层的kaiming uniform是有增益的。
 '''
 
 
@@ -30,9 +31,10 @@ class myLinear(nn.Module):
 		super().__init__()
 		# Error-3: remember to call super().__init__() at first, otherwise the parameters will not be correctly set
 		self.W = nn.Parameter(
-			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
+			torch.randn(in_features, hidden_features) / math.sqrt(in_features) * 5/3
 		) 
 		# Error-1: remember to set them as parameters!!
+		# Error-9: the linear layer has gain! 
 		if not bias:
 			self.b = nn.Parameter(
 				torch.zeros(hidden_features)

@@ -32,7 +32,7 @@ class myLinear(nn.Module):
 	def __init__(self, in_features, hidden_features, bias=True):
 		super().__init__()
 		self.W = nn.Parameter(
-			torch.randn(in_features, hidden_features) / math.sqrt(in_features)
+			torch.randn(in_features, hidden_features) / math.sqrt(in_features) * 5/3
 		)
 		if not bias:
 			self.b = nn.Parameter(
